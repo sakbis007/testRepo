@@ -19,3 +19,9 @@ def two_sum_efficient(nums, target):
             return (num_dict[complement], i)
         num_dict[num] = i
     return None
+# main function to test the above implementations
+if __name__ == "__main__":
+    nums = [2, 7, 11, 15]
+    target = 9
+    print("Brute Force Result:", two_sum_brute_force(nums, target))
+    print("Efficient Result:", two_sum_efficient(nums, target))
