@@ -29,12 +29,43 @@ def print_list(head):
     print(" -> ".join(parts) + " -> None ")
 
 
+def merge_lists(list1, list2):
+    vals=[]
+    while list1:
+        vals.append(list1.val)
+        list1=list1.next
+    while list2:
+        vals.append(list2.val)
+        list2=list2.next
+    vals.sort()
+
+    merged_list=build_list(vals)
+    return merged_list
 
 
+def merge_lists_optimized(list1,list2):
+    dummy = ListNode(-1)
+    current = dummy
+    while list1 and list2:
+        if list1.val<list2.val:
+            current.next=list1
+            list1=list1.next
+        else:
+            current.next=list2
+            list2=list2.next
+        current=current.next
+    current.next=list1 if list1 else list2
+    return dummy.next
 # ---- Test It ----
 
 list1 = build_list([1, 2, 4])
 print_list(list1)
 
-head_new=insert_at_end(list1, 1)
-print_list(head_new)
+list2 = build_list([1, 2, 5])
+print_list(list1)
+merged_list= merge_lists(list1,list2)
+print_list(merged_list)
+
+merged_list_optimized = merge_lists_optimized(list1, list2)
+print("Merged List (Optimized):")
+print_list(merged_list_optimized)
