@@ -56,16 +56,28 @@ def merge_lists_optimized(list1,list2):
         current=current.next
     current.next=list1 if list1 else list2
     return dummy.next
+
+def rev_list(head):
+    current = head
+    prev=None
+    while current:
+        next_node=current.next
+        current.next=prev
+        prev=current
+        current=next_node
+    return prev
 # ---- Test It ----
 
-list1 = build_list([1, 2, 4])
+list1 = build_list([2,5,6,7])
 print_list(list1)
 
-list2 = build_list([1, 2, 5])
-print_list(list1)
-merged_list= merge_lists(list1,list2)
-print_list(merged_list)
+# list2 = build_list([1, 2, 5])
+# print_list(list1)
+# merged_list= merge_lists(list1,list2)
+# print_list(merged_list)
 
-merged_list_optimized = merge_lists_optimized(list1, list2)
-print("Merged List (Optimized):")
-print_list(merged_list_optimized)
+# merged_list_optimized = merge_lists_optimized(list1, list2)
+# print("Merged List (Optimized):")
+# print_list(merged_list_optimized)
+rev_list=rev_list(list1)
+print_list(rev_list)
