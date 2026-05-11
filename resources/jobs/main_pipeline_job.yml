@@ -1,0 +1,60 @@
+resources:
+  jobs:
+    main_pipeline:
+      name: ${bundle.target}-main-pipeline
+      description: "Bronze → Silver → Gold ETL pipeline"
+
+      # Single-node cluster — compatible with the Databricks free/Community edition
+      job_clusters:
+        - job_cluster_key: single_node
+          new_cluster:
+            spark_version: "15.4.x-scala2.12"
+            node_type_id: "m5d.large"
+            num_workers: 0
+            spark_conf:
+              spark.databricks.cluster.profile: singleNode
+              spark.master: "local[*]"
+            custom_tags:
+              ResourceClass: SingleNode
+
+      tasks:
+        - task_key: ingest_data
+          job_cluster_key: single_node
+          notebook_task:
+            notebook_path: ../../notebooks/01_ingest_data
+            base_parameters:
+              raw_input_path: "/FileStore/tables/raw/stock_prices.csv"
+              bronze_output_path: "/FileStore/tables/bronze/stock_prices"
+
+        - task_key: transform_data
+          depends_on:
+            - task_key: ingest_data
+          job_cluster_key: single_node
+          notebook_task:
+            notebook_path: ../../notebooks/02_transform_data
+            base_parameters:
+              bronze_input_path: "/FileStore/tables/bronze/stock_prices"
+              silver_output_path: "/FileStore/tables/silver/stock_prices"
+              k_window: "3"
+
+        - task_key: analyze_data
+          depends_on:
+            - task_key: transform_data
+          job_cluster_key: single_node
+          notebook_task:
+            notebook_path: ../../notebooks/03_analyze_data
+            base_parameters:
+              silver_input_path: "/FileStore/tables/silver/stock_prices"
+              gold_output_path: "/FileStore/tables/gold/stock_summary"
+
+      # Email alerts on failure
+      email_notifications:
+        on_failure:
+          - ${var.alert_email}
+        no_alert_for_skipped_runs: true
+
+      # Daily schedule at midnight UTC
+      schedule:
+        quartz_cron_expression: "0 0 0 * * ?"
+        timezone_id: "UTC"
+        pause_status: PAUSED   # un-pause manually in prod target

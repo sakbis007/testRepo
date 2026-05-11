@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "testrepo"
+version = "0.1.0"
+description = "Databricks data engineering project — Bronze/Silver/Gold ETL pipeline"
+requires-python = ">=3.10"
+dependencies = [
+    "pyspark>=3.5",
+    "delta-spark>=3.2",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# ── Pytest ────────────────────────────────────────────────────────────────────
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "--tb=short -q"
+
+# ── Coverage ──────────────────────────────────────────────────────────────────
+[tool.coverage.run]
+source = ["testrepo"]
+
+[tool.coverage.report]
+exclude_lines = ["if __name__ == .__main__.:"]
+
+# ── Ruff (linter) ─────────────────────────────────────────────────────────────
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP"]
+ignore = ["E501"]
+
+# ── Mypy ──────────────────────────────────────────────────────────────────────
+[tool.mypy]
+python_version = "3.10"
+strict = false
+ignore_missing_imports = true
