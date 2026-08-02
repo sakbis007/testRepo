@@ -1,0 +1,44 @@
+# Databricks Asset Bundle — testRepo
+# Docs: https://docs.databricks.com/dev-tools/bundles/index.html
+#
+# Deploy:  databricks bundle deploy --target dev
+# Run:     databricks bundle run main_pipeline --target dev
+
+bundle:
+  name: testRepo
+
+# Pull in all job definitions from the resources/ folder
+include:
+  - resources/jobs/*.yml
+
+variables:
+  alert_email:
+    description: "Email address for job failure alerts"
+    default: "biswas.saikat.kol@gmail.com"
+
+targets:
+  # ── Development (default) ─────────────────────────────────────────────────
+  dev:
+    mode: development   # prefixes all resource names with [dev <user>]
+    default: true
+    workspace:
+      host: https://dbc-2f35a4a9-1816.cloud.databricks.com
+    variables:
+      alert_email: "biswas.saikat.kol@gmail.com"
+
+  # ── Staging ───────────────────────────────────────────────────────────────
+  staging:
+    workspace:
+      host: https://dbc-2f35a4a9-1816.cloud.databricks.com
+    variables:
+      alert_email: "biswas.saikat.kol@gmail.com"
+
+  # ── Production ────────────────────────────────────────────────────────────
+  prod:
+    workspace:
+      host: https://dbc-2f35a4a9-1816.cloud.databricks.com
+    variables:
+      alert_email: "biswas.saikat.kol@gmail.com"
+    # Unset PAUSED so the scheduled job actually runs in prod
+    run_as:
+      service_principal_name: ${var.prod_service_principal}
